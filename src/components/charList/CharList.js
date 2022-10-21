@@ -20,7 +20,7 @@ class CharList extends Component {
 
     marvelService = new MarvelService();
 
-    onCharLoaded = (chars) => {
+    onCharListLoaded = (chars) => {
         this.setState({chars, loading: false});
     }
 
@@ -31,16 +31,41 @@ class CharList extends Component {
     updateCharList = () => {
         this.marvelService
             .getAllCharacters()
-            .then(this.onCharLoaded)
+            .then(this.onCharListLoaded)
             .catch(this.onError);
+    }
+
+    getList = (chars) => {
+        const imageHelper = new ImageHelper();
+    
+        const list = chars.map(item => {
+            const thStyle = imageHelper.fixImageNotAvailableStyle(item.thumbnail, 'unset');
+            
+            return (
+                <li 
+                    className="char__item" 
+                    key={item.id}
+                    onClick={() => this.props.onCharSelected(item.id)}>
+                    <img style={thStyle} src={item.thumbnail} alt={item.name}/>
+                    <div className="char__name">{item.name}</div>
+                </li>
+            );
+        });
+        return (
+            <ul className="char__grid">
+                {list}            
+            </ul> 
+        );
     }
 
     render() {
         const {chars, loading, error} = this.state;
 
+        const list = this.getList(chars);
+
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? <List chars={chars}/> : null;
+        const content = !(loading || error) ? list : null;
 
         return (
             <div className="char__list">
@@ -54,25 +79,6 @@ class CharList extends Component {
         )
     }
 
-}
-
-const List = ({chars}) => {
-    const list = chars.map(item => {
-        const imageHelper = new ImageHelper();
-        const thStyle = imageHelper.fixImageNotAvailableStyle(item.thumbnail);
-        
-        return (
-            <li className="char__item" key={item.id}>
-                <img style={thStyle} src={item.thumbnail} alt={item.name}/>
-                <div className="char__name">{item.name}</div>
-            </li>
-        );
-    });
-    return (
-        <ul className="char__grid">
-            {list}            
-        </ul> 
-    );
 }
 
 export default CharList;

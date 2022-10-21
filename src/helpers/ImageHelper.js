@@ -1,8 +1,8 @@
 class ImageHelper {
-    fixImageNotAvailableStyle = (thumbnail) => {
+    fixImageNotAvailableStyle = (thumbnail, objectFitVal = 'contain') => {
         let thumbnailStyle = {};
         if (thumbnail.indexOf('image_not_available.jpg') !== -1) {
-            thumbnailStyle = {objectFit: 'contain'};
+            thumbnailStyle = {objectFit: objectFitVal};
         }
         return thumbnailStyle;
     }
