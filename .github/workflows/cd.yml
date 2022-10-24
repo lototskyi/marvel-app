@@ -1,0 +1,37 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+      - run: npm install --save-dev
+      - run: npm run build
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-avz --delete"
+          SOURCE: "build/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+      - name: Clear Cloudflare cache
+        uses: Cyb3r-Jak3/action-cloudflare-cache@v1.1.0
+        with:
+          # Zone is required by both methods
+          zone: ${{ secrets.CLOUDFLARE_ZONE }}
+
+          # Using API Token
+          api_token: ${{ secrets.CLOUDFLARE_TOKEN }}
