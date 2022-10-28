@@ -59,17 +59,46 @@ class CharList extends Component {
         this.setState({loading: false, error: true});
     }
 
+    itemRefs = [];
+
+    _setItemRef = item => {
+        this.itemRefs.push(item);
+    }
+
+    _setItemFocus = (id) => {
+        this.itemRefs.forEach(item => {
+            item.classList.remove('char__item_selected');
+        });
+        this.itemRefs[id].classList.add('char__item_selected');
+        this.itemRefs[id].focus();
+    }
+
+    _handleClick = (id, charId) => {
+        this.props.onCharSelected(charId);
+        this._setItemFocus(id);
+    }
+
     getList = (chars) => {
         const imageHelper = new ImageHelper();
     
-        const list = chars.map(item => {
+        const list = chars.map((item, i) => {
             const thStyle = imageHelper.fixImageNotAvailableStyle(item.thumbnail, 'unset');
             
             return (
                 <li 
-                    className="char__item" 
+                    className="char__item"
+                    tabIndex={0} 
+                    ref={this._setItemRef}
                     key={item.id}
-                    onClick={() => this.props.onCharSelected(item.id)}>
+                    onClick={() => {
+                        this._handleClick(i, item.id)
+                    }}
+                    onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                this._handleClick(i, item.id)
+                            }
+                        }
+                    }>
                     <img style={thStyle} src={item.thumbnail} alt={item.name}/>
                     <div className="char__name">{item.name}</div>
                 </li>
