@@ -3,6 +3,7 @@ import useMarvelService from '../../services/MarvelService';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
+import { useInfiniteScroll } from '../../hooks/infiniteScroll.hook';
 
 import './comicsList.scss';
 
@@ -15,26 +16,19 @@ const ComicsList = () => {
     const [newItemLoading, setItemLoading] = useState(false);
     const [comicsEnded, setComicsEnded] = useState(false);
 
+    const {setIsFetching} = useInfiniteScroll(() => {onRequest(offset)});
+
     useEffect(() => {
         onRequest(offset, true);
     // eslint-disable-next-line
     }, []);
 
-    useEffect(() => {
-        window.addEventListener('scroll', showModalByScroll);
-        return () => window.removeEventListener('scroll', showModalByScroll);
-   })
-      
-   const showModalByScroll = () => {
-       if (Math.ceil(window.scrollY + document.documentElement.clientHeight) >= document.documentElement.scrollHeight) {
-           onRequest(offset);
-       }
-   }
 
     const onRequest = (offset, initial) => {
         initial ? setItemLoading(false): setItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded);
+        setIsFetching(false);
     }
 
     const onComicsListLoaded = (newComics) => {
