@@ -32,6 +32,13 @@
             box-shadow: 0 5px 20px $main-color;
             transform: translateY(-8px);
         }
+        &-enter {
+            transform: translateX(-750px) rotate(90deg);
+        }
+        &-enter-active {
+            transform: translateX(-750px) rotate(90deg);
+            transition: all 0 500ms;
+        }
     }
     &__name {
         font-weight: bold;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import PropTypes from 'prop-types';
 
 import useMarvelService from '../../services/MarvelService';
@@ -64,29 +65,31 @@ const CharList = (props) => {
             const thStyle = imageHelper.fixImageNotAvailableStyle(item.thumbnail, 'unset');
             
             return (
-                <li 
-                    className="char__item"
-                    tabIndex={0} 
-                    ref={el => itemRefs.current[i] = el}
-                    key={item.id}
-                    onClick={() => {
-                        _handleClick(i, item.id)
-                    }}
-                    onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                _handleClick(i, item.id)
+                <CSSTransition key={item.id} timeout={10} classNames="char__item">
+                    <li 
+                        className="char__item"
+                        tabIndex={0} 
+                        ref={el => itemRefs.current[i] = el}
+                        
+                        onClick={() => {
+                            _handleClick(i, item.id)
+                        }}
+                        onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    _handleClick(i, item.id)
+                                }
                             }
-                        }
-                    }>
-                    <img style={thStyle} src={item.thumbnail} alt={item.name}/>
-                    <div className="char__name">{item.name}</div>
-                </li>
+                        }>
+                        <img style={thStyle} src={item.thumbnail} alt={item.name}/>
+                        <div className="char__name">{item.name}</div>
+                    </li>
+                </CSSTransition>
             );
         });
         return (
-            <ul className="char__grid">
+            <TransitionGroup component={'ul'} className="char__grid">
                 {list}            
-            </ul> 
+            </TransitionGroup>
         );
     }
     
