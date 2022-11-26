@@ -65,6 +65,11 @@ main {
     position: relative;
 }
 
+.sidebar {
+    position: sticky;
+    top: 0;
+}
+
 .pulse {
     animation: pulse 1.5s ease-in-out .5s infinite
 }
