@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import useInfiniteScroll from 'react-infinite-scroll-hook';
 
 import useMarvelService from '../../services/MarvelService';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
-import { useInfiniteScroll } from '../../hooks/infiniteScroll.hook';
 
 import './comicsList.scss';
 
@@ -18,7 +18,11 @@ const ComicsList = () => {
     const [newItemLoading, setItemLoading] = useState(false);
     const [comicsEnded, setComicsEnded] = useState(false);
 
-    const {setIsFetching} = useInfiniteScroll(() => {onRequest(offset)});
+    const [sentryRef] = useInfiniteScroll({
+        loading,
+        hasNextPage: !comicsEnded,
+        onLoadMore: () => onRequest(offset),
+    });
 
     useEffect(() => {
         onRequest(offset, true);
@@ -30,7 +34,6 @@ const ComicsList = () => {
         initial ? setItemLoading(false): setItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded);
-        setIsFetching(false);
     }
 
     const onComicsListLoaded = (newComics) => {
@@ -80,7 +83,7 @@ const ComicsList = () => {
             {spinner}
             {errorMessage}
             {list}
-            <button className="button button__main button__long"
+            <button ref={sentryRef} className="button button__main button__long"
                 disabled={newItemLoading}
                 style={{'display': comicsEnded ? 'none' : 'block'}}
                 onClick={() => onRequest(offset)}>
